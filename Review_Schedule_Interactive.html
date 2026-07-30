@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title V Block Grant Review Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #366092;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #366092;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .meta {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+
+        nav {
+            margin: 30px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        nav button {
+            padding: 8px 16px;
+            border: 1px solid #366092;
+            background-color: white;
+            color: #366092;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        nav button:hover {
+            background-color: #366092;
+            color: white;
+        }
+
+        .phase {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .phase-header {
+            background-color: #366092;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .phase-header:hover {
+            background-color: #2a4d6f;
+        }
+
+        .phase-header.phase-1 {
+            background-color: #4472C4;
+        }
+
+        .phase-header.phase-1:hover {
+            background-color: #366092;
+        }
+
+        .phase-header.phase-2a {
+            background-color: #70AD47;
+        }
+
+        .phase-header.phase-2a:hover {
+            background-color: #548235;
+        }
+
+        .phase-header.phase-2b {
+            background-color: #C65911;
+        }
+
+        .phase-header.phase-2b:hover {
+            background-color: #9d4409;
+        }
+
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .phase.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .phase-content {
+            max-height: 10000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .phase.collapsed .phase-content {
+            max-height: 0;
+        }
+
+        .week {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #4472C4;
+        }
+
+        .week.phase-2b {
+            border-left-color: #C65911;
+        }
+
+        .week h3 {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .day {
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            border-left: 3px solid #4472C4;
+        }
+
+        .day.phase-2b {
+            border-left-color: #C65911;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .date-day {
+            font-weight: bold;
+            color: #366092;
+            font-size: 14px;
+        }
+
+        .time-block {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .form-section {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tasks {
+            margin-top: 8px;
+        }
+
+        .task {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 6px;
+            font-size: 13px;
+            padding: 4px 0;
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .task-text {
+            flex-grow: 1;
+            line-height: 1.4;
+        }
+
+        .task.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #70AD47;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .clear-button {
+            display: block;
+            margin: 30px auto 0;
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .clear-button:hover {
+            background-color: #d0d0d0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .phase-header {
+                font-size: 13px;
+            }
+
+            .day-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            nav {
+                gap: 5px;
+            }
+
+            nav button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📋 Title V Block Grant Review Schedule</h1>
+        <p class="subtitle">Palau & FSM FY27 | Reviewer: Glenn</p>
+        <p class="meta">July 30 – August 31, 2026 | 2–3 Hours Daily (Early Afternoon)</p>
+    </header>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #4472C4;"></div>
+            <span>Phase 1 & 2A (Palau)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #C65911;"></div>
+            <span>Phase 2B (FSM)</span>
+        </div>
+    </div>
+
+    <nav>
+        <button onclick="jumpToPhase('phase-1')">Phase 1: Materials</button>
+        <button onclick="jumpToPhase('phase-2a')">Phase 2A: Palau</button>
+        <button onclick="jumpToPhase('phase-2b')">Phase 2B: FSM</button>
+    </nav>
+
+    <div class="progress-text">Tasks Completed: <span id="completed">0</span> / <span id="total">0</span></div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill">0%</div>
+    </div>
+
+    <div id="schedule"></div>
+
+    <button class="clear-button" onclick="clearAllCheckboxes()">Clear All Checkboxes</button>
+
+    <script>
+        const scheduleData = [
+            {
+                phase: 'phase-1',
+                phaseName: 'PHASE 1: MATERIALS GATHERING & INITIAL SETUP',
+                weeks: [
+                    {
+                        weekName: '',
+                        days: [
+                            {
+                                date: '7/30/2026',
+                                day: 'Thursday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Materials - Palau/FSM Organization',
+                                tasks: [
+                                    'Download and organize all Palau & FSM FY27 materials',
+                                    'Create working copies of Reviewer Report Forms (Palau & FSM)',
+                                    'Set up Notion tracker for findings by domain'
+                                ]
+                            },
+                            {
+                                date: '7/31/2026',
+                                day: 'Friday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Materials - Verification',
+                                tasks: [
+                                    'Verify all PDFs load (Palau & FSM)',
+                                    'Review MCHB FY27 Guidance by Domain',
+                                    'Note key guidance for NPMs, ESMs, Universal requirements'
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                phase: 'phase-2a',
+                phaseName: 'PHASE 2A: PALAU REVIEW & WRITEUP',
+                weeks: [
+                    {
+                        weekName: 'WEEK 1: Executive Summary & Needs Assessment',
+                        days: [
+                            {
+                                date: '8/4/2026',
+                                day: 'Monday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Program Overview',
+                                tasks: [
+                                    'Read Palau FY27 Executive Summary (pgs 14-16)',
+                                    'Read Program Overview section; note demographics, priorities'
+                                ]
+                            },
+                            {
+                                date: '8/5/2026',
+                                day: 'Tuesday',
+                                time: '1:15 PM – 3:45 PM',
+                                section: 'MCH Success Story',
+                                tasks: [
+                                    'Read MCH Success Story, Organizational Chart, MOU',
+                                    'Note: Key organizational strengths, partnerships, program structure'
+                                ]
+                            },
+                            {
+                                date: '8/6/2026',
+                                day: 'Wednesday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Needs Assessment: Overview',
+                                tasks: [
+                                    'Read Five-Year Needs Assessment',
+                                    'Review Data Alerts FY27',
+                                    'Note: Changes from FY26'
+                                ]
+                            },
+                            {
+                                date: '8/7/2026',
+                                day: 'Thursday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Needs Assessment: State Response',
+                                tasks: [
+                                    'Read State Action Plan narrative',
+                                    'Compare Palau FY26 vs. FY27 priorities',
+                                    'Note: NPM/SPM changes'
+                                ]
+                            },
+                            {
+                                date: '8/8/2026',
+                                day: 'Friday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Needs Assessment: Partnerships & Workforce',
+                                tasks: [
+                                    'Review State Action Plan partnership sections',
+                                    'Review Supporting Documents (2 attachments)',
+                                    'Note: Cross-sector collaborations'
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        weekName: 'WEEK 2: State Action Plan & Domain Analysis',
+                        days: [
+                            {
+                                date: '8/11/2026',
+                                day: 'Monday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'State Action Plan: Alignment & Strategies',
+                                tasks: [
+                                    'Deep dive: State Action Plan (full read)',
+                                    'Note: Strategy alignment with priority needs, NPM/SPM/ESM alignment'
+                                ]
+                            },
+                            {
+                                date: '8/12/2026',
+                                day: 'Tuesday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Domains: Women/Maternal & Perinatal/Infant',
+                                tasks: [
+                                    'Read domain narratives for both domains',
+                                    'Note: Evidence-based strategies, NPM targets, capacity, partnerships'
+                                ]
+                            },
+                            {
+                                date: '8/13/2026',
+                                day: 'Wednesday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Domains: Child Health & CSHCN',
+                                tasks: [
+                                    'Read domain narratives for both domains',
+                                    'Note: Evidence-based strategies, NPM targets, capacity, partnerships'
+                                ]
+                            },
+                            {
+                                date: '8/14/2026',
+                                day: 'Thursday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Domains: Cross-Cutting & Data Review',
+                                tasks: [
+                                    'Read Cross-Cutting/Systems Building domain',
+                                    'Review ESM Detail Sheets (Form 10)',
+                                    'Analyze data trends: Improved, declined, stable NPMs/ESMs'
+                                ]
+                            },
+                            {
+                                date: '8/15/2026',
+                                day: 'Friday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Apply Lenses & Draft Section A',
+                                tasks: [
+                                    'Apply Family-Centered Care lens to all domains',
+                                    'Apply Pacific Islander cultural lens to all domains',
+                                    'Begin drafting Section A: Strengths, Challenges, Recommendations'
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        weekName: 'WEEK 3: Finalize Palau',
+                        days: [
+                            {
+                                date: '8/18/2026',
+                                day: 'Monday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Complete Section A',
+                                tasks: [
+                                    'Complete Section A (Reviewer Notes & Discussion)',
+                                    'Integrate both review lenses throughout',
+                                    'Proofread Section A'
+                                ]
+                            },
+                            {
+                                date: '8/19/2026',
+                                day: 'Tuesday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Draft Section B: Summary Statement',
+                                tasks: [
+                                    'Draft Section B: Successes/Impacts (2-3 key points with examples)',
+                                    'Draft Section B: Challenges (2-3 key points with context)',
+                                    'Draft Section B: Recommendations (2-3 specific, actionable recommendations)',
+                                    'Sign and date Palau form'
+                                ]
+                            },
+                            {
+                                date: '8/20/2026',
+                                day: 'Wednesday',
+                                time: '2:00 PM – 3:00 PM',
+                                section: 'Transition to FSM',
+                                tasks: [
+                                    'Save and organize final Palau form',
+                                    'Skim FSM materials overview for context'
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                phase: 'phase-2b',
+                phaseName: 'PHASE 2B: FSM REVIEW & WRITEUP',
+                weeks: [
+                    {
+                        weekName: 'WEEK 4: Executive Summary & Needs Assessment',
+                        days: [
+                            {
+                                date: '8/20/2026',
+                                day: 'Wednesday',
+                                time: '5:00 PM – 6:00 PM',
+                                section: 'Program Overview (Evening Start)',
+                                tasks: [
+                                    'Read FSM FY27 Executive Summary (light start, evening)'
+                                ]
+                            },
+                            {
+                                date: '8/21/2026',
+                                day: 'Thursday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'MCH Success Story',
+                                tasks: [
+                                    'Read MCH Success Story, Organizational Chart, MOU',
+                                    'Open FSM Reviewer Report Form'
+                                ]
+                            },
+                            {
+                                date: '8/22/2026',
+                                day: 'Friday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Needs Assessment: Overview',
+                                tasks: [
+                                    'Read Five-Year Needs Assessment',
+                                    'Review Data Alerts FY27',
+                                    'Note: Identified needs, emerging issues'
+                                ]
+                            },
+                            {
+                                date: '8/25/2026',
+                                day: 'Monday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Needs Assessment: State Response',
+                                tasks: [
+                                    'Read FSM State Action Plan',
+                                    'Compare FY26 vs. FY27 priorities',
+                                    'Note: How state responded to prior findings'
+                                ]
+                            },
+                            {
+                                date: '8/26/2026',
+                                day: 'Tuesday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Needs Assessment: Partnerships & Workforce',
+                                tasks: [
+                                    'Review State Action Plan partnership sections',
+                                    'Review FSM Supporting Documents',
+                                    'Note: Family partnerships, workforce, cross-sector collaborations'
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        weekName: 'WEEK 5: State Action Plan & Domain Analysis',
+                        days: [
+                            {
+                                date: '8/27/2026',
+                                day: 'Wednesday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'State Action Plan: Alignment & Strategies',
+                                tasks: [
+                                    'Deep dive: Full State Action Plan',
+                                    'Note: Strategy alignment, NPM/SPM/ESM alignment, gaps'
+                                ]
+                            },
+                            {
+                                date: '8/28/2026',
+                                day: 'Thursday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Domains: Women/Maternal, Perinatal/Infant, Child',
+                                tasks: [
+                                    'Read Women/Maternal Health domain narrative',
+                                    'Read Perinatal/Infant Health domain narrative',
+                                    'Read Child Health domain narrative'
+                                ]
+                            },
+                            {
+                                date: '8/29/2026',
+                                day: 'Friday',
+                                time: '1:00 PM – 3:30 PM',
+                                section: 'Domains: CSHCN & Cross-Cutting & Data',
+                                tasks: [
+                                    'Read CSHCN domain narrative',
+                                    'Read Cross-Cutting/Systems Building domain',
+                                    'Review ESM Detail Sheets (Form 10)',
+                                    'Apply both review lenses (Family-Centered Care + Pacific Islander cultural)'
+                                ]
+                            },
+                            {
+                                date: '8/31/2026',
+                                day: 'Monday',
+                                time: '1:30 PM – 4:00 PM',
+                                section: 'Complete Sections A & B',
+                                tasks: [
+                                    'Complete Section A (Reviewer Notes & Discussion)',
+                                    'Draft Section B (Successes, Challenges, Recommendations)',
+                                    'Proofread entire form',
+                                    'Sign and date FSM form',
+                                    'BOTH PALAU & FSM FORMS COMPLETE BY EOD AUGUST 31'
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        function renderSchedule() {
+            const container = document.getElementById('schedule');
+            let totalTasks = 0;
+            
+            scheduleData.forEach(phase => {
+                const phaseDiv = document.createElement('div');
+                phaseDiv.className = `phase ${phase.phase}`;
+                phaseDiv.id = phase.phase;
+                
+                const headerClass = phase.phase === 'phase-2b' ? 'phase-header phase-2b' : `phase-header ${phase.phase}`;
+                const phaseHeader = document.createElement('div');
+                phaseHeader.className = headerClass;
+                phaseHeader.innerHTML = `<span>${phase.phaseName}</span><span class="toggle-icon">▼</span>`;
+                phaseHeader.onclick = () => togglePhase(phaseDiv);
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'phase-content';
+                
+                phase.weeks.forEach((week, weekIndex) => {
+                    if (week.weekName) {
+                        const weekDiv = document.createElement('div');
+                        const weekClass = phase.phase === 'phase-2b' ? 'week phase-2b' : 'week';
+                        weekDiv.className = weekClass;
+                        weekDiv.innerHTML = `<h3>${week.weekName}</h3>`;
+                        
+                        week.days.forEach(day => {
+                            totalTasks += day.tasks.length;
+                            const dayDiv = document.createElement('div');
+                            const dayClass = phase.phase === 'phase-2b' ? 'day phase-2b' : 'day';
+                            dayDiv.className = dayClass;
+                            
+                            let dayHTML = `
+                                <div class="day-header">
+                                    <span class="date-day">${day.date} • ${day.day}</span>
+                                    <span class="time-block">${day.time}</span>
+                                </div>
+                                <div class="form-section">${day.section}</div>
+                                <div class="tasks">
+                            `;
+                            
+                            day.tasks.forEach((task, taskIndex) => {
+                                const taskId = `task-${phase.phase}-${weekIndex}-${day.date.replace(/\//g, '-')}-${taskIndex}`;
+                                dayHTML += `
+                                    <div class="task" id="${taskId}">
+                                        <input type="checkbox" class="task-checkbox" onchange="toggleTask(this, '${taskId}'); updateProgress();">
+                                        <span class="task-text">${task}</span>
+                                    </div>
+                                `;
+                            });
+                            
+                            dayHTML += '</div>';
+                            dayDiv.innerHTML = dayHTML;
+                            weekDiv.appendChild(dayDiv);
+                        });
+                        
+                        contentDiv.appendChild(weekDiv);
+                    }
+                });
+                
+                phaseDiv.appendChild(phaseHeader);
+                phaseDiv.appendChild(contentDiv);
+                container.appendChild(phaseDiv);
+            });
+            
+            document.getElementById('total').textContent = totalTasks;
+            loadCheckboxState();
+            updateProgress();
+        }
+
+        function togglePhase(phaseDiv) {
+            phaseDiv.classList.toggle('collapsed');
+        }
+
+        function toggleTask(checkbox, taskId) {
+            const taskElement = document.getElementById(taskId);
+            if (checkbox.checked) {
+                taskElement.classList.add('completed');
+            } else {
+                taskElement.classList.remove('completed');
+            }
+            saveCheckboxState();
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const checked = document.querySelectorAll('.task-checkbox:checked').length;
+            const total = checkboxes.length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            document.getElementById('completed').textContent = checked;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressFill').textContent = percentage + '%';
+        }
+
+        function saveCheckboxState() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const state = {};
+            checkboxes.forEach((cb, index) => {
+                state[`task-${index}`] = cb.checked;
+            });
+            localStorage.setItem('reviewScheduleCheckboxes', JSON.stringify(state));
+        }
+
+        function loadCheckboxState() {
+            const state = JSON.parse(localStorage.getItem('reviewScheduleCheckboxes') || '{}');
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            checkboxes.forEach((cb, index) => {
+                if (state[`task-${index}`]) {
+                    cb.checked = true;
+                    cb.parentElement.classList.add('completed');
+                }
+            });
+        }
+
+        function clearAllCheckboxes() {
+            if (confirm('Are you sure you want to clear all checkboxes?')) {
+                const checkboxes = document.querySelectorAll('.task-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    cb.parentElement.classList.remove('completed');
+                });
+                localStorage.removeItem('reviewScheduleCheckboxes');
+                updateProgress();
+            }
+        }
+
+        function jumpToPhase(phaseId) {
+            const phaseElement = document.getElementById(phaseId);
+            if (phaseElement) {
+                phaseElement.classList.remove('collapsed');
+                phaseElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Initialize
+        renderSchedule();
+    </script>
+</body>
+</html>
